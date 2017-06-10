@@ -16,11 +16,12 @@
   $("#add-train-btn").on("click", function(event){
     event.preventDefault();
 
-    var trainNm = $("#train-name-input").val().trim();
-    var destination = $("#destination-input").val().trim();
-    var freq = $("#freq-input").val().trim();
-    var arrival = $("#arrival-input").val().trim().substract(10, "years").format("X");
+    
 
+    trainNm = $("#train-name-input").val().trim();
+    destination = $("#destination-input").val().trim();
+    freq = $("#freq-input").val().trim();
+    arrival = $("#arrival-input").val().trim();
 
     console.log(trainNm);
     console.log(destination);
@@ -32,7 +33,7 @@
       destination : destination,
       freq : freq,
       arrival : arrival 
-    };
+    }
 
     database.ref().push(newTrain);
 
@@ -55,23 +56,26 @@
 
   console.log(childSnapshot.val());
 
-    var trainNm = childSnapshot.val().name;
-    var destination = childSnapshot.val().destination;
-    var freq = childSnapshot.val().freq;
-    var arrival = childSnapshot.val().arrival;
+    var TtrainNm = childSnapshot.val().name;
+    var Tdestination = childSnapshot.val().destination;
+    var Tfreq = childSnapshot.val().freq;
+    var Tarrival = childSnapshot.val().arrival;
+    var firstTimeConverted = moment(Tarrival, "hh:mm").subtract(1, "years");
+    console.log(firstTimeConverted);
 
-    var minAway = moment().diff(moment.unix(arrival),"minutes");
-    var timeRemain = moment().diff(moment.unix(arrival), "minutes") % freq;
-    var minutes = freq - timeRemain;
-    var nextTrain = moment().add(minutes, "m").format("HH:mm A");
+    var diffTime = moment().diff(moment(firstTimeConverted), "minutes");
+    console.log("DIFFERENCE IN TIME: " + diffTime);
+    var tRemainder = diffTime % Tfreq;
+    console.log(tRemainder);
+    var currentTime = moment();
+    console.log("CURRENT TIME: " + moment(currentTime).format("hh:mm"));
+    var tMinutesTillTrain = Tfreq - tRemainder;
+    console.log("MINUTES TILL TRAIN: " + tMinutesTillTrain);
+    var nextTrain = moment().add(tMinutesTillTrain, "m").format("hh:mm A");
+    console.log("ARRIVAL TIME: " + moment(nextTrain).format("hh:mm"));
 
-    console.log(minutes);
-    console.log(arrival);
-    console.log(moment().format("hh:mm A"));
-    console.log(arrival);
-    console.log(moment().format("X"));
-
-    $("#trainTb > tbody").append("<tr><td>" + trainNm + "</td><td>" + destination + "</td><td>" + freq + " mins" + "</td><td>" + arrival + "</td><td>" + minutes + "</td></tr>");
+  
+    $("#trainTb > tbody").append("<tr><td>" + TtrainNm + "</td><td>" + Tdestination + "</td><td>" + Tfreq + " mins" + "</td><td>" + nextTrain + "</td><td>" + tMinutesTillTrain + "</td></tr>");
   });
 
 
